@@ -55,11 +55,22 @@ export default function PaymentsPage() {
                 fetch('/api/students'),
                 fetch('/api/payments')
             ])
-            setStudents(await studentsRes.json())
-            setPayments(await paymentsRes.json())
+
+            if (!studentsRes.ok || !paymentsRes.ok) throw new Error('Failed to fetch data')
+
+            const studentsData = await studentsRes.json()
+            const paymentsData = await paymentsRes.json()
+
+            // Safety check: ensure data is array
+            setStudents(Array.isArray(studentsData) ? studentsData : [])
+            setPayments(Array.isArray(paymentsData) ? paymentsData : [])
             setLoading(false)
         } catch (error) {
             console.error(error)
+            alert("Error loading data. The database might be unavailable on Vercel.")
+            setStudents([])
+            setPayments([])
+            setLoading(false)
         }
     }
 

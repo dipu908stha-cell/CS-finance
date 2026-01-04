@@ -4,6 +4,7 @@ import './globals.css'
 export const metadata: Metadata = {
     title: 'Billing System',
     description: 'Advanced Billing System for Grade 11 & 12',
+    manifest: '/manifest.json',
 }
 
 import Navbar from '@/components/Navbar'

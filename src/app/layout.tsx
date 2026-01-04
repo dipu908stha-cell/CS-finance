@@ -17,9 +17,9 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body>
-                <Navbar />
+                {/* <Navbar /> */}
                 {children}
-                <ChatBot />
+                {/* <ChatBot /> */}
             </body>
         </html>
     )

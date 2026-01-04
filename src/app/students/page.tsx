@@ -49,10 +49,14 @@ export default function StudentsPage() {
     async function fetchStudents() {
         try {
             const res = await fetch('/api/students')
+            if (!res.ok) throw new Error('Failed to fetch students')
+
             const data = await res.json()
-            setStudents(data)
+            setStudents(Array.isArray(data) ? data : [])
         } catch (error) {
             console.error('Failed to fetch students', error)
+            alert("Error loading students. Database connection might be failing.")
+            setStudents([])
         } finally {
             setLoading(false)
         }

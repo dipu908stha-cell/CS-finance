@@ -30,10 +30,14 @@ export default function FeesPage() {
     async function fetchPackages() {
         try {
             const res = await fetch('/api/fees')
+            if (!res.ok) throw new Error('Failed to fetch packages')
+
             const data = await res.json()
-            setPackages(data)
+            setPackages(Array.isArray(data) ? data : [])
         } catch (error) {
             console.error('Failed to fetch packages', error)
+            alert("Error loading fee packages.")
+            setPackages([])
         } finally {
             setLoading(false)
         }

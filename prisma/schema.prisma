@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Student {
+  id             Int      @id @default(autoincrement())
+  fullName       String
+  grade          String
+  stream         String
+  section        String
+  rollNo         String
+  academicYear   String
+  parentName     String
+  parentContact  String
+  address        String
+  dob            DateTime? // Made optional to avoid migration issues with existing data
+  registrationNo String?  @unique // Unique 6-digit ID
+
+  admissionDate  DateTime @default(now())
+  status         String   @default("Active") // Active, Left, Passed
+
+  feeAssignments StudentFeeMap[]
+  payments       Payment[]
+  installments   Installment[]
+  marks          StudentMark[]
+}
+
+model FeePackage {
+  id             Int      @id @default(autoincrement())
+  name           String
+  grade          String
+  totalAmount    Float
+  breakdown      String?
+  
+  studentAssignments StudentFeeMap[]
+}
+
+model StudentFeeMap {
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  packageId      Int
+  totalFee       Float
+  discount       Float    @default(0)
+  finalAmount    Float
+  paymentMode    String
+
+  student        Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  feePackage     FeePackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+}
+
+model Installment {
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  name           String
+  dueDate        DateTime
+  amount         Float
+  status         String   @default("Pending") // Pending, Paid, Partial
+
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  payments       Payment[]
+}
+
+model Payment {
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  installmentId  Int?
+  amount         Float
+  date           DateTime @default(now())
+  method         String
+  receivedBy     String
+  remarks        String?
+
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  installment    Installment? @relation(fields: [installmentId], references: [id])
+}
+
+model Exam {
+  id        Int      @id @default(autoincrement())
+  name      String
+  startDate DateTime
+  endDate   DateTime?
+  
+  subjects  ExamSubject[]
+}
+
+model Subject {
+  id        Int      @id @default(autoincrement())
+  name      String
+  code      String
+  stream    String?  // e.g. "Science", "Management", or null for Common
+  
+  exams     ExamSubject[]
+}
+
+model ExamSubject {
+  id        Int      @id @default(autoincrement())
+  examId    Int
+  subjectId Int
+  fullMarks Float
+  passMarks Float
+  
+  exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  marks     StudentMark[]
+}
+
+model StudentMark {
+  id            Int      @id @default(autoincrement())
+  studentId     Int
+  examSubjectId Int
+  obtainedMarks Float
+  remarks       String?
+  
+  student       Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  examSubject   ExamSubject @relation(fields: [examSubjectId], references: [id], onDelete: Cascade)
+}

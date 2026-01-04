@@ -28,13 +28,7 @@ export default function Navbar() {
             top: 0,
             zIndex: 100
         }}>
-            <style jsx global>{`
-                @media print {
-                    nav {
-                        display: none !important;
-                    }
-                }
-            `}</style>
+            {/* Print style moved to globals.css */}
             <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: '#333' }}>
                 BillingSystem
             </div>
